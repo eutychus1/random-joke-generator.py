@@ -1,7 +1,17 @@
 import tkinter as tk
 import random
+import pygame
 
-# Jokes categorized
+# Initialize pygame mixer
+pygame.mixer.init()
+
+# Load sound effect
+try:
+    pygame.mixer.music.load("rimshot.mp3")  # Place this sound file in the same directory
+except pygame.error:
+    print("Sound file not found. Please add 'rimshot.mp3' in the same folder.")
+
+# Joke categories
 jokes = {
     "Python": [
         "Why do Python programmers wear glasses? Because they can't C!",
@@ -18,7 +28,7 @@ jokes = {
     ]
 }
 
-# ASCII art title
+# ASCII Art
 ascii_art = r"""
     ____       _   _                 _                 
    |  _ \ __ _| |_| |__   ___   ___ | | ___   __ _ ___ 
@@ -29,42 +39,61 @@ ascii_art = r"""
              🤓 Welcome to the Code Joke Hub! 🐍
 """
 
-# GUI application
+# Play sound
+def play_sound():
+    try:
+        pygame.mixer.music.play()
+    except:
+        pass  # If sound fails, just skip it silently
+
+# Show joke from specific category
 def show_joke(category):
     joke = random.choice(jokes[category])
     output_label.config(text=joke)
+    play_sound()
 
-# Create main window
+# Show joke from random category
+def show_random_joke():
+    category = random.choice(list(jokes.keys()))
+    show_joke(category)
+
+# GUI setup
 root = tk.Tk()
 root.title("Python Joke Generator")
-root.geometry("600x400")
+root.geometry("650x480")
 root.config(bg="black")
 
-# ASCII art display
+# ASCII art label
 ascii_label = tk.Label(
     root, text=ascii_art, font=("Courier", 9), fg="lightgreen", bg="black", justify="left"
 )
 ascii_label.pack(pady=10)
 
-# Buttons for joke categories
+# Button frame
 button_frame = tk.Frame(root, bg="black")
 button_frame.pack(pady=5)
 
-python_button = tk.Button(
+# Category buttons
+tk.Button(
     button_frame, text="Python Jokes 🐍", command=lambda: show_joke("Python"),
     bg="#306998", fg="white", font=("Arial", 12), padx=10, pady=5
-)
-python_button.grid(row=0, column=0, padx=10)
+).grid(row=0, column=0, padx=10)
 
-programming_button = tk.Button(
+tk.Button(
     button_frame, text="Programming Jokes 💻", command=lambda: show_joke("Programming"),
     bg="#444", fg="white", font=("Arial", 12), padx=10, pady=5
-)
-programming_button.grid(row=0, column=1, padx=10)
+).grid(row=0, column=1, padx=10)
 
-# Output label for joke
-output_label = tk.Label(root, text="", wraplength=500, font=("Arial", 14), bg="black", fg="cyan")
+tk.Button(
+    button_frame, text="New Random Joke 🔁", command=show_random_joke,
+    bg="#00a86b", fg="white", font=("Arial", 12), padx=10, pady=5
+).grid(row=0, column=2, padx=10)
+
+# Output label
+output_label = tk.Label(
+    root, text="", wraplength=600, font=("Arial", 14), bg="black", fg="cyan", justify="center"
+)
 output_label.pack(pady=30)
 
-# Run the GUI loop
+# Run app
 root.mainloop()
