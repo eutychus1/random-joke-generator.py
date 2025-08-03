@@ -2,14 +2,12 @@ import tkinter as tk
 import random
 import pygame
 
-# Initialize pygame mixer
+# Initialize sound
 pygame.mixer.init()
-
-# Load sound effect
 try:
-    pygame.mixer.music.load("rimshot.mp3")  # Place this sound file in the same directory
+    pygame.mixer.music.load("rimshot.mp3")  # Make sure this file is in the same directory
 except pygame.error:
-    print("Sound file not found. Please add 'rimshot.mp3' in the same folder.")
+    print("Sound file not found. Add 'rimshot.mp3' to your folder.")
 
 # Joke categories
 jokes = {
@@ -28,7 +26,7 @@ jokes = {
     ]
 }
 
-# ASCII Art
+# ASCII art title
 ascii_art = r"""
     ____       _   _                 _                 
    |  _ \ __ _| |_| |__   ___   ___ | | ___   __ _ ___ 
@@ -39,28 +37,47 @@ ascii_art = r"""
              🤓 Welcome to the Code Joke Hub! 🐍
 """
 
+# Background colors to cycle through
+bg_colors = ["#1c1c1c", "#222244", "#2c3e50", "#3d3d3d", "#004d40", "#0f3057", "#212121", "#001f3f"]
+text_colors = ["#00ffff", "#00ffcc", "#ffcc00", "#ff4081", "#7CFC00", "#ffffff"]
+
 # Play sound
 def play_sound():
     try:
         pygame.mixer.music.play()
     except:
-        pass  # If sound fails, just skip it silently
+        pass
 
-# Show joke from specific category
+# Show joke from category
 def show_joke(category):
     joke = random.choice(jokes[category])
     output_label.config(text=joke)
     play_sound()
 
-# Show joke from random category
+# Show random joke
 def show_random_joke():
     category = random.choice(list(jokes.keys()))
     show_joke(category)
 
+# Cycle background color
+def change_background():
+    new_bg = random.choice(bg_colors)
+    new_fg = random.choice(text_colors)
+
+    root.config(bg=new_bg)
+    ascii_label.config(bg=new_bg, fg=new_fg)
+    output_label.config(bg=new_bg, fg=new_fg)
+    button_frame.config(bg=new_bg)
+
+    for widget in button_frame.winfo_children():
+        widget.config(bg="#333", fg="white")
+
+    root.after(4000, change_background)  # Change every 4 seconds
+
 # GUI setup
 root = tk.Tk()
 root.title("Python Joke Generator")
-root.geometry("650x480")
+root.geometry("650x500")
 root.config(bg="black")
 
 # ASCII art label
@@ -69,31 +86,25 @@ ascii_label = tk.Label(
 )
 ascii_label.pack(pady=10)
 
-# Button frame
+# Buttons
 button_frame = tk.Frame(root, bg="black")
 button_frame.pack(pady=5)
 
-# Category buttons
-tk.Button(
-    button_frame, text="Python Jokes 🐍", command=lambda: show_joke("Python"),
-    bg="#306998", fg="white", font=("Arial", 12), padx=10, pady=5
-).grid(row=0, column=0, padx=10)
+tk.Button(button_frame, text="Python Jokes 🐍", command=lambda: show_joke("Python"),
+          bg="#306998", fg="white", font=("Arial", 12), padx=10, pady=5).grid(row=0, column=0, padx=10)
 
-tk.Button(
-    button_frame, text="Programming Jokes 💻", command=lambda: show_joke("Programming"),
-    bg="#444", fg="white", font=("Arial", 12), padx=10, pady=5
-).grid(row=0, column=1, padx=10)
+tk.Button(button_frame, text="Programming Jokes 💻", command=lambda: show_joke("Programming"),
+          bg="#444", fg="white", font=("Arial", 12), padx=10, pady=5).grid(row=0, column=1, padx=10)
 
-tk.Button(
-    button_frame, text="New Random Joke 🔁", command=show_random_joke,
-    bg="#00a86b", fg="white", font=("Arial", 12), padx=10, pady=5
-).grid(row=0, column=2, padx=10)
+tk.Button(button_frame, text="New Random Joke 🔁", command=show_random_joke,
+          bg="#00a86b", fg="white", font=("Arial", 12), padx=10, pady=5).grid(row=0, column=2, padx=10)
 
 # Output label
-output_label = tk.Label(
-    root, text="", wraplength=600, font=("Arial", 14), bg="black", fg="cyan", justify="center"
-)
+output_label = tk.Label(root, text="", wraplength=600, font=("Arial", 14), bg="black", fg="cyan", justify="center")
 output_label.pack(pady=30)
+
+# Start color cycling
+change_background()
 
 # Run app
 root.mainloop()
